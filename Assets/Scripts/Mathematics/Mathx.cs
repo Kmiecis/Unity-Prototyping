@@ -17,12 +17,14 @@ namespace Common.Mathematics
 		}
 
 
+		/// <summary> Calculates min value out of absolute valued parameters </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float AbsMin(float a, float b)
 		{
 			return Mathf.Abs(a) < Mathf.Abs(b) ? a : b;
 		}
 
+		/// <summary> Calculates max value out of absolute valued parameters </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float AbsMax(float a, float b)
 		{
@@ -30,12 +32,14 @@ namespace Common.Mathematics
 		}
 
 
+		/// <summary> Calculates safely next index in order </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Next(int v, int count, int offset = 1)
 		{
 			return (v + offset) % count;
 		}
 
+		/// <summary> Calculates safely previous index in order </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Prev(int v, int count, int offset = 1)
 		{
@@ -66,14 +70,14 @@ namespace Common.Mathematics
 		}
 
 
-		/// <summary>Returns the result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a).</summary>
+		/// <summary> Returns the result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a) </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Unlerp(float a, float b, float v)
 		{
 			return (v - a) / (b - a);
 		}
 
-		/// <summary>Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a).</summary>
+		/// <summary> Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a) </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector2 Unlerp(Vector2 a, Vector2 b, Vector2 v)
 		{
@@ -83,7 +87,7 @@ namespace Common.Mathematics
 			);
 		}
 
-		/// <summary>Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a).</summary>
+		/// <summary> Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a) </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector3 Unlerp(Vector3 a, Vector3 b, Vector3 v)
 		{
@@ -94,7 +98,7 @@ namespace Common.Mathematics
 			);
 		}
 
-		/// <summary>Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a).</summary>
+		/// <summary> Returns the componentwise result of normalizing a floating point value x to a range [a, b]. The opposite of lerp. Equivalent to (x - a) / (b - a) </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static Vector4 Unlerp(Vector4 a, Vector4 b, Vector4 v)
 		{
@@ -104,6 +108,28 @@ namespace Common.Mathematics
 				Unlerp(a.z, b.z, v.z),
 				Unlerp(a.w, b.w, v.w)
 			);
+		}
+
+
+		/// <summary> Calculates componentwise multiplication of two Vector2 structures </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector2 Mul(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x * b.x, a.y * b.y);
+		}
+
+		/// <summary> Calculates componentwise multiplication of two Vector3 structures </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector3 Mul(Vector3 a, Vector3 b)
+		{
+			return new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+		}
+
+		/// <summary> Calculates componentwise multiplication of two Vector4 structures </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Vector4 Mul(Vector4 a, Vector4 b)
+		{
+			return new Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
 		}
 	}
 }
