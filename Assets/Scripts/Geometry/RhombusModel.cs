@@ -5,7 +5,7 @@ namespace Common.Mathematics
 	public static class RhombusModel
 	{
 		public const int VCOUNT = 4;
-		public const float CENTER_TO_VERTEX = Mathx.ROOT_2;
+		public const float CENTER_TO_VERTEX = Mathx.ROOT_2 * 0.5f;
 
 		public static readonly Vector2[] V2 = new Vector2[]
 		{
