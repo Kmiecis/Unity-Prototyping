@@ -38,8 +38,8 @@ namespace Common.Prototyping
 				input.octaves, input.persistance, input.lacunarity,
 				scale, input.seed);
 
-			float nMaxX = (input.width - 1) * 1f / input.width;
-			float nMaxY = (input.height - 1) * 1f / input.height;
+			float nMaxX = (input.width - 1) * 1.0f / input.width;
+			float nMaxY = (input.height - 1) * 1.0f / input.height;
 
 			var corners = new Vector2[]
 			{
@@ -48,6 +48,8 @@ namespace Common.Prototyping
 				new Vector2(nMaxX, nMaxY),
 				new Vector2(0.0f, nMaxY)
 			};
+			
+			var revExtents = new Vector2(1.0f / input.width, 1.0f / input.height);
 
 			var meshPoints = new List<Vector2>();
 			meshPoints.AddRange(corners);
@@ -78,13 +80,12 @@ namespace Common.Prototyping
 
 					if (isMin || isMax)
 					{
-						meshPoints.Add(new Vector2(x * 1f / input.width, y * 1f / input.height));
+						meshPoints.Add(new Vector2(x * revExtents.x, y * revExtents.y));
 					}
 				}
 			}
-
+			
 			var ts = Triangulation.Simple(meshPoints);
-
 			for (int i = 0; i < ts.Count; i += 3)
 			{
 				var t0 = ts[i + 0];
