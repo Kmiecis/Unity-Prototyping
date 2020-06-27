@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypeLogMesh : PrototypeMeshBase
+	public class ProceduralLogMesh : ProceduralMeshBase
 	{
 		[Header("Parameters")]
 		public Input input = Input.Default;

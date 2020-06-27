@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypeWoodenDoorFrameMesh : PrototypeMeshBase
+	public class ProceduralWoodenDoorFrameMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

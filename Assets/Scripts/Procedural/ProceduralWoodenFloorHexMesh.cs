@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypeWoodenFloorHexMesh : PrototypeMeshBase
+	public class ProceduralWoodenFloorHexMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

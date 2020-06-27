@@ -4,14 +4,14 @@ using UnityEngine;
 namespace Common.Prototyping
 {
 	[ExecuteInEditMode]
-	public class PrototypeTextureDisplay : MonoBehaviour
+	public class ProceduralTextureDisplay : MonoBehaviour
 	{
 #pragma warning disable 0649
 		[Header("Display")]
 		[SerializeField] private MeshRenderer m_MeshRenderer;
 
 		[Header("Create")]
-		[SerializeField] private PrototypeTextureBase m_PrototypeTexture;
+		[SerializeField] private ProceduralTextureBase m_ProceduralTexture;
 		[SerializeField] private Texture2D m_Texture;
 
 		[Header("Properties")]
@@ -22,11 +22,11 @@ namespace Common.Prototyping
 		[SerializeField] private string m_AssetName = "";
 #pragma warning restore
 
-		public void Prototype()
+		public void Procedural()
 		{
-			if (m_PrototypeTexture != null)
+			if (m_ProceduralTexture != null)
 			{
-				var textureData = m_PrototypeTexture.Create();
+				var textureData = m_ProceduralTexture.Create();
 				m_Texture = textureData.CreateTexture();
 
 				m_Texture.alphaIsTransparency = m_AlphaIsTransparency;
@@ -49,28 +49,28 @@ namespace Common.Prototyping
 #if UNITY_EDITOR
 		private void OnValidate()
 		{
-			StartPrototype();
+			StartProcedural();
 		}
 
 		private void Update()
 		{
-			if (m_PrototypeTexture != null && m_PrototypeTexture.IsDirty)
+			if (m_ProceduralTexture != null && m_ProceduralTexture.IsDirty)
 			{
-				m_PrototypeTexture.IsDirty = false;
-				StartPrototype();
+				m_ProceduralTexture.IsDirty = false;
+				StartProcedural();
 			}
 		}
 
-		void StartPrototype()
+		void StartProcedural()
 		{
 			if (gameObject.activeInHierarchy)
-				StartCoroutine(DelayedPrototype());
+				StartCoroutine(DelayedProcedural());
 		}
 
-		IEnumerator DelayedPrototype()
+		IEnumerator DelayedProcedural()
 		{
 			yield return null;
-			Prototype();
+			Procedural();
 		}
 #endif
 	}

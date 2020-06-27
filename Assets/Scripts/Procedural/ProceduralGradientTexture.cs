@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypeGradientTexture : PrototypeTextureBase
+	public class ProceduralGradientTexture : ProceduralTextureBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

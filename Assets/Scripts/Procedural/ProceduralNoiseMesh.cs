@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypeNoiseMesh : PrototypeMeshBase
+	public class ProceduralNoiseMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

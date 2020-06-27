@@ -4,14 +4,14 @@ using UnityEngine;
 namespace Common.Prototyping
 {
 	[ExecuteInEditMode]
-	public class PrototypeMeshDisplay : MonoBehaviour
+	public class ProceduralMeshDisplay : MonoBehaviour
 	{
 #pragma warning disable 0649
 		[Header("Display")]
 		[SerializeField] private MeshFilter m_MeshFilter;
 
 		[Header("Create")]
-		[SerializeField] private PrototypeMeshBase m_PrototypeMesh;
+		[SerializeField] private ProceduralMeshBase m_ProceduralMesh;
 		[SerializeField] private Mesh m_Mesh;
 
 		[Header("Save")]
@@ -19,11 +19,11 @@ namespace Common.Prototyping
 		[SerializeField] private string m_AssetName = "";
 #pragma warning restore
 
-		private void Prototype()
+		private void Procedural()
 		{
-			if (m_PrototypeMesh != null)
+			if (m_ProceduralMesh != null)
 			{
-				var meshData = m_PrototypeMesh.Create();
+				var meshData = m_ProceduralMesh.Create();
 				m_Mesh = meshData.CreateMesh();
 			}
 
@@ -44,28 +44,28 @@ namespace Common.Prototyping
 #if UNITY_EDITOR
 		private void OnValidate()
 		{
-			StartPrototype();
+			StartProcedural();
 		}
 
 		private void Update()
 		{
-			if (m_PrototypeMesh != null && m_PrototypeMesh.IsDirty)
+			if (m_ProceduralMesh != null && m_ProceduralMesh.IsDirty)
 			{
-				m_PrototypeMesh.IsDirty = false;
-				StartPrototype();
+				m_ProceduralMesh.IsDirty = false;
+				StartProcedural();
 			}
 		}
 
-		private void StartPrototype()
+		private void StartProcedural()
 		{
 			if (gameObject.activeInHierarchy)
-				StartCoroutine(DelayedPrototype());
+				StartCoroutine(DelayedProcedural());
 		}
 
-		IEnumerator DelayedPrototype()
+		IEnumerator DelayedProcedural()
 		{
 			yield return null;
-			Prototype();
+			Procedural();
 		}
 #endif
 	}

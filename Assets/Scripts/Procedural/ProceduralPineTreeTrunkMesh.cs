@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public class PrototypePineTreeTrunkMesh : PrototypeMeshBase
+	public class ProceduralPineTreeTrunkMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	[CustomEditor(typeof(PrototypeTextureDisplay))]
-	public class PrototypeTextureDisplayEditor : Editor
+	[CustomEditor(typeof(ProceduralTextureDisplay))]
+	public class ProceduralTextureDisplayEditor : Editor
 	{
-		protected PrototypeTextureDisplay script
-			=> (PrototypeTextureDisplay)target;
+		protected ProceduralTextureDisplay script
+			=> (ProceduralTextureDisplay)target;
 
 		public override void OnInspectorGUI()
 		{

@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Common.Prototyping
 {
-	public class PrototypeThickGrassMesh : PrototypeMeshBase
+	public class ProceduralThickGrassMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

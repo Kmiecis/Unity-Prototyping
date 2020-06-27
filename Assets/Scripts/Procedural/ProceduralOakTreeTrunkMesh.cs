@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 namespace Common.Prototyping
 {
 	// TODO
-	public class PrototypeOakTreeTrunkMesh : PrototypeMeshBase
+	public class ProceduralOakTreeTrunkMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	[CustomEditor(typeof(PrototypeMeshDisplay))]
-	public class PrototypeMeshDisplayEditor : Editor
+	[CustomEditor(typeof(ProceduralMeshDisplay))]
+	public class ProceduralMeshDisplayEditor : Editor
 	{
-		protected PrototypeMeshDisplay script
-			=> (PrototypeMeshDisplay)target;
+		protected ProceduralMeshDisplay script
+			=> (ProceduralMeshDisplay)target;
 
 		public override void OnInspectorGUI()
 		{

@@ -2,7 +2,7 @@
 
 namespace Common.Prototyping
 {
-	public interface IPrototypeTexture
+	public interface IProceduralTexture
 	{
 		ITextureData Create();
 	}

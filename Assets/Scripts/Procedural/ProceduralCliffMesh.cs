@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 namespace Common.Prototyping
 {
 	// TODO
-	public class PrototypeCliffMesh : PrototypeMeshBase
+	public class ProceduralCliffMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

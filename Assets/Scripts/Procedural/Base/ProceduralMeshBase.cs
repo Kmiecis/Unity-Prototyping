@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public abstract class PrototypeMeshBase : MonoBehaviour, IPrototypeMesh
+	public abstract class ProceduralMeshBase : MonoBehaviour, IProceduralMesh
 	{
 		public bool IsDirty { get; set; }
 

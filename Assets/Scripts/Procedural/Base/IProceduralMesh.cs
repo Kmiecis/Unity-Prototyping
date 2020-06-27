@@ -2,7 +2,7 @@
 
 namespace Common
 {
-	public interface IPrototypeMesh
+	public interface IProceduralMesh
 	{
 		IMeshData Create();
 	}

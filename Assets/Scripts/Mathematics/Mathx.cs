@@ -16,6 +16,18 @@ namespace Common.Mathematics
 			return a - e < b && a + e > b;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool Equals(Vector2 a, Vector2 b, float e = FLOAT_EQUALITY_EPS)
+		{
+			return Equals(a.x, b.x) && Equals(a.y, b.y);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool Equals(Vector3 a, Vector3 b, float e = FLOAT_EQUALITY_EPS)
+		{
+			return Equals(a.x, b.x) && Equals(a.y, b.y) && Equals(a.z, b.z);
+		}
+
 
 		/// <summary> Calculates min value out of absolute valued parameters </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

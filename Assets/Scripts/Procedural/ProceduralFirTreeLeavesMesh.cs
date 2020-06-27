@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Common.Prototyping
 {
-	public class PrototypeFirTreeLeavesMesh : PrototypeMeshBase
+	public class ProceduralFirTreeLeavesMesh : ProceduralMeshBase
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;

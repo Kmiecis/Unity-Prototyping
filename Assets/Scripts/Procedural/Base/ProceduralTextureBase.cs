@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Common.Prototyping
 {
-	public abstract class PrototypeTextureBase : MonoBehaviour, IPrototypeTexture
+	public abstract class ProceduralTextureBase : MonoBehaviour, IProceduralTexture
 	{
 		public bool IsDirty { get; set; }
 
