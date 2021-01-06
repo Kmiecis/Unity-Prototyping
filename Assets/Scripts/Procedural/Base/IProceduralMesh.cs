@@ -1,9 +1,7 @@
-﻿using Common.Rendering;
-
-namespace Common
+﻿namespace Common
 {
 	public interface IProceduralMesh
 	{
-		IMeshData Create();
+		IMeshBuilder Create();
 	}
 }

@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -10,20 +9,17 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var meshBuilder = new FlatMeshBuilder();
+
+			var random = new Random(input.seed);
 
 			var unbendHeight = input.height * input.bendThreshold;
 			var bendHeight = input.height - unbendHeight;
@@ -37,37 +33,40 @@ namespace Common.Prototyping
 			};
 
 			var initialCoordinates = Vector2Int.zero;
-			var initialPosition = HexModel.Convert(initialCoordinates) * input.radius * 2;
-			CreateSingleGrass(input, meshData, innerInput, initialPosition);
-			for (int d = 0; d < (int)HexModel.Direction.Count; ++d)
+			var initialPosition = HexagonUtility.Convert(initialCoordinates) * input.radius * 2;
+			CreateSingleGrass(input, meshBuilder, innerInput, initialPosition, ref random);
+			for (int d = 0; d < (int)HexagonUtility.Direction.Count; ++d)
 			{
 				for (int x = 0; x < input.depth; ++x)
 				{
-					var nextCoordinates = initialCoordinates + HexModel.T2[d] * (x + 1);
-					var nextPosition = HexModel.Convert(nextCoordinates) * input.radius * 2;
-					CreateSingleGrass(input, meshData, innerInput, nextPosition);
+					var nextCoordinates = initialCoordinates + HexagonUtility.T2[d] * (x + 1);
+					var nextPosition = HexagonUtility.Convert(nextCoordinates) * input.radius * 2;
+					CreateSingleGrass(input, meshBuilder, innerInput, nextPosition, ref random);
 
 					for (int y = 0; y < x; ++y)
 					{
-						var offsetCoordinates = nextCoordinates + HexModel.T2[Mathx.Next(d, (int)HexModel.Direction.Count, 2)] * (y + 1);
-						var offsetPosition = HexModel.Convert(offsetCoordinates) * input.radius * 2;
-						CreateSingleGrass(input, meshData, innerInput, offsetPosition);
+						var offsetCoordinates = nextCoordinates + HexagonUtility.T2[Mathx.IncrIndex(d, (int)HexagonUtility.Direction.Count, 2)] * (y + 1);
+						var offsetPosition = HexagonUtility.Convert(offsetCoordinates) * input.radius * 2;
+						CreateSingleGrass(input, meshBuilder, innerInput, offsetPosition, ref random);
 					}
 				}
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
-		private static void CreateSingleGrass(Input input, FlatMeshDataUVs meshData, InnerInput innerInput, Vector3 offset)
+		private static void CreateSingleGrass(Input input, FlatMeshBuilder meshBuilder, InnerInput innerInput, Vector3 offset, ref Random random)
 		{
-			int index = Random.Range(0, HexModel.VCOUNT);
-			float indexOffset = Random.Range(0f, 1f);
+			int index = random.Next(0, HexagonUtility.VCOUNT);
+			float indexOffset = random.NextFloat(0f, 1f);
 
-			var vertex0 = Geometry.Vertex(index, HexModel.VCOUNT, indexOffset);
-			var vertex01 = Geometry.Vertex(index + 1, HexModel.VCOUNT, indexOffset);
-			var vertex1 = Geometry.Vertex(index + 2, HexModel.VCOUNT, indexOffset);
-			var randomizationStrength = (index + indexOffset) / HexModel.VCOUNT;
+			var u0 = index * 1.0f / HexagonUtility.VCOUNT + indexOffset;
+			var u01 = (index + 1) * 1.0f / HexagonUtility.VCOUNT + indexOffset;
+			var u1 = (index + 2) * 1.0f / HexagonUtility.VCOUNT + indexOffset;
+			var vertex0 = Mathx.Direction(u0).X_Y();
+			var vertex01 = Mathx.Direction(u01).X_Y();
+			var vertex1 = Mathx.Direction(u1).X_Y();
+			var randomizationStrength = (index + indexOffset) / HexagonUtility.VCOUNT;
 
 			var direction = vertex1 - vertex0;
 
@@ -93,33 +92,33 @@ namespace Common.Prototyping
 			var v6 = v45 + rh2;
 
 			// Bottom front
-			meshData.AddTriangle(v01, v0, v2);
-			meshData.AddTriangle(v01, v2, v23);
-			meshData.AddTriangle(v01, v23, v3);
-			meshData.AddTriangle(v01, v3, v1);
+			meshBuilder.AddTriangle(v01, v0, v2);
+			meshBuilder.AddTriangle(v01, v2, v23);
+			meshBuilder.AddTriangle(v01, v23, v3);
+			meshBuilder.AddTriangle(v01, v3, v1);
 			// Bottom back
-			meshData.AddTriangle(v01, v1, v3);
-			meshData.AddTriangle(v01, v3, v23);
-			meshData.AddTriangle(v01, v23, v2);
-			meshData.AddTriangle(v01, v2, v0);
+			meshBuilder.AddTriangle(v01, v1, v3);
+			meshBuilder.AddTriangle(v01, v3, v23);
+			meshBuilder.AddTriangle(v01, v23, v2);
+			meshBuilder.AddTriangle(v01, v2, v0);
 
 			// Middle front
-			meshData.AddTriangle(v23, v2, v4);
-			meshData.AddTriangle(v23, v4, v45);
-			meshData.AddTriangle(v23, v45, v5);
-			meshData.AddTriangle(v23, v5, v3);
+			meshBuilder.AddTriangle(v23, v2, v4);
+			meshBuilder.AddTriangle(v23, v4, v45);
+			meshBuilder.AddTriangle(v23, v45, v5);
+			meshBuilder.AddTriangle(v23, v5, v3);
 			// Middle back
-			meshData.AddTriangle(v23, v3, v5);
-			meshData.AddTriangle(v23, v5, v45);
-			meshData.AddTriangle(v23, v45, v4);
-			meshData.AddTriangle(v23, v4, v2);
+			meshBuilder.AddTriangle(v23, v3, v5);
+			meshBuilder.AddTriangle(v23, v5, v45);
+			meshBuilder.AddTriangle(v23, v45, v4);
+			meshBuilder.AddTriangle(v23, v4, v2);
 
 			// Top front
-			meshData.AddTriangle(v45, v4, v6);
-			meshData.AddTriangle(v45, v6, v5);
+			meshBuilder.AddTriangle(v45, v4, v6);
+			meshBuilder.AddTriangle(v45, v6, v5);
 			// Top back
-			meshData.AddTriangle(v45, v5, v6);
-			meshData.AddTriangle(v45, v6, v4);
+			meshBuilder.AddTriangle(v45, v5, v6);
+			meshBuilder.AddTriangle(v45, v6, v4);
 
 			var s1 = Mathx.Unlerp(0.0f, input.height, v23.y);
 			var s2 = Mathx.Unlerp(0.0f, input.height, v45.y);
@@ -139,33 +138,33 @@ namespace Common.Prototyping
 			var uv6 = new Vector2(0.5f, 1.0f);
 
 			// Bottom front
-			meshData.AddUVs(uv01, uv0, uv2);
-			meshData.AddUVs(uv01, uv2, uv23);
-			meshData.AddUVs(uv01, uv23, uv3);
-			meshData.AddUVs(uv01, uv3, uv1);
+			meshBuilder.AddUVs(uv01, uv0, uv2);
+			meshBuilder.AddUVs(uv01, uv2, uv23);
+			meshBuilder.AddUVs(uv01, uv23, uv3);
+			meshBuilder.AddUVs(uv01, uv3, uv1);
 			// Bottom back
-			meshData.AddUVs(uv01, uv1, uv3);
-			meshData.AddUVs(uv01, uv3, uv23);
-			meshData.AddUVs(uv01, uv23, uv2);
-			meshData.AddUVs(uv01, uv2, uv0);
+			meshBuilder.AddUVs(uv01, uv1, uv3);
+			meshBuilder.AddUVs(uv01, uv3, uv23);
+			meshBuilder.AddUVs(uv01, uv23, uv2);
+			meshBuilder.AddUVs(uv01, uv2, uv0);
 
 			// Middle front
-			meshData.AddUVs(uv23, uv2, uv4);
-			meshData.AddUVs(uv23, uv4, uv45);
-			meshData.AddUVs(uv23, uv45, uv5);
-			meshData.AddUVs(uv23, uv5, uv3);
+			meshBuilder.AddUVs(uv23, uv2, uv4);
+			meshBuilder.AddUVs(uv23, uv4, uv45);
+			meshBuilder.AddUVs(uv23, uv45, uv5);
+			meshBuilder.AddUVs(uv23, uv5, uv3);
 			// Middle back
-			meshData.AddUVs(uv23, uv3, uv5);
-			meshData.AddUVs(uv23, uv5, uv45);
-			meshData.AddUVs(uv23, uv45, uv4);
-			meshData.AddUVs(uv23, uv4, uv2);
+			meshBuilder.AddUVs(uv23, uv3, uv5);
+			meshBuilder.AddUVs(uv23, uv5, uv45);
+			meshBuilder.AddUVs(uv23, uv45, uv4);
+			meshBuilder.AddUVs(uv23, uv4, uv2);
 
 			// Top front
-			meshData.AddUVs(uv45, uv4, uv6);
-			meshData.AddUVs(uv45, uv6, uv5);
+			meshBuilder.AddUVs(uv45, uv4, uv6);
+			meshBuilder.AddUVs(uv45, uv6, uv5);
 			// Top back
-			meshData.AddUVs(uv45, uv5, uv6);
-			meshData.AddUVs(uv45, uv6, uv4);
+			meshBuilder.AddUVs(uv45, uv5, uv6);
+			meshBuilder.AddUVs(uv45, uv6, uv4);
 		}
 
 		[Serializable]
@@ -176,6 +175,7 @@ namespace Common.Prototyping
 			[Range(0.0f, 1.0f)] public float radius;
 			[Range(0.0f, 1.0f)] public float bendThreshold;
 			[Range(0.0f, 1.0f)] public float curveStrength;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{

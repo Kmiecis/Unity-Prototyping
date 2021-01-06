@@ -1,5 +1,4 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
 
@@ -10,14 +9,14 @@ namespace Common.Prototyping
 		[Header("Properties")]
 		public Input input = Input.Default;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
 			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var meshBuilder = new FlatMeshBuilder();
 
 			var vt = new Vector3(0.0f, input.height, 0.0f);
 			var vr = new Vector3(0.0f, input.height * input.rootThreshold, 0.0f);
@@ -32,10 +31,12 @@ namespace Common.Prototyping
 
 			var uvt = new Vector2(0.5f, 1.0f);
 
-			var vertex0 = Geometry.Vertex(input.vertices - 1, input.vertices);
+			var u0 = (input.vertices - 1) * 1.0f / input.vertices;
+			var vertex0 = Mathx.Direction(u0).X_Y();
 			for (int i = 0; i < input.vertices; ++i)
 			{
-				var vertex1 = Geometry.Vertex(i, input.vertices);
+				var u1 = i * 1.0f / input.vertices;
+				var vertex1 = Mathx.Direction(u1).X_Y();
 
 				var v0 = vertex0 * input.radius * (1.0f + input.rootRadius);
 				var v1 = vertex1 * input.radius * (1.0f + input.rootRadius);
@@ -43,20 +44,20 @@ namespace Common.Prototyping
 				var v2 = vertex0 * input.radius + vr;
 				var v3 = vertex1 * input.radius + vr;
 
-				meshData.AddTriangle(v0, v2, v3);
-				meshData.AddTriangle(v0, v3, v1);
+				meshBuilder.AddTriangle(v0, v2, v3);
+				meshBuilder.AddTriangle(v0, v3, v1);
 
-				meshData.AddTriangle(v2, vt, v3);
+				meshBuilder.AddTriangle(v2, vt, v3);
 
-				meshData.AddUVs(uv0, uv2, uv3);
-				meshData.AddUVs(uv0, uv3, uv1);
+				meshBuilder.AddUVs(uv0, uv2, uv3);
+				meshBuilder.AddUVs(uv0, uv3, uv1);
 
-				meshData.AddUVs(uv2, uvt, uv3);
+				meshBuilder.AddUVs(uv2, uvt, uv3);
 
 				vertex0 = vertex1;
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
 		[Serializable]

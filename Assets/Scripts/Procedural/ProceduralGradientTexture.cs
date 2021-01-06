@@ -1,5 +1,4 @@
-﻿using Common.Rendering;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Common.Prototyping
@@ -9,31 +8,31 @@ namespace Common.Prototyping
 		[Header("Properties")]
 		public Input input = Input.Default;
 
-		public override ITextureData Create()
+		public override ITexture2DBuilder Create()
 		{
 			return Create(in input);
 		}
 
-		public static TextureData Create(in Input input)
+		public static Texture2DBuilder Create(in Input input)
 		{
-			var textureData = new TextureData(new Vector2Int(input.width, input.height));
+			var textureBuilder = new Texture2DBuilder(input.width, input.height);
 
 			switch (input.axis)
 			{
 				case Input.Axis.Horizontal:
 					for (int x = 0; x < input.width; ++x)
 						for (int y = 0; y < input.height; ++y)
-							textureData[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, x * 1.0f / input.width);
+							textureBuilder[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, x * 1.0f / input.width);
 					break;
 
 				case Input.Axis.Vertical:
 					for (int x = 0; x < input.width; ++x)
 						for (int y = 0; y < input.height; ++y)
-							textureData[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, y * 1.0f / input.height);
+							textureBuilder[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, y * 1.0f / input.height);
 					break;
 			}
 
-			return textureData;
+			return textureBuilder;
 		}
 
 		[Serializable]

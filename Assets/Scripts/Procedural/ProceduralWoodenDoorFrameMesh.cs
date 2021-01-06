@@ -1,5 +1,4 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
 
@@ -10,14 +9,14 @@ namespace Common.Prototyping
 		[Header("Properties")]
 		public Input input = Input.Default;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
 			return Create(in input);
 		}
 
-		public static FlatMeshData Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshData();
+			var meshBuilder = new FlatMeshBuilder();
 			
 			const float windowBarAngleY = 45.0f;
 
@@ -41,8 +40,8 @@ namespace Common.Prototyping
 				spike = frameSpike
 			};
 
-			AddBar(meshData, frameLeftBarInput);
-			AddBar(meshData, frameRightBarInput);
+			AddBar(meshBuilder, frameLeftBarInput);
+			AddBar(meshBuilder, frameRightBarInput);
 
 			var doorOffset = frameOffset * input.doorWidthFill;
 			var doorHeight = frameHeight * input.doorHeightFill;
@@ -63,8 +62,8 @@ namespace Common.Prototyping
 				spike = frameSpike
 			};
 
-			AddBar(meshData, doorLeftBarInput);
-			AddBar(meshData, doorRightBarInput);
+			AddBar(meshBuilder, doorLeftBarInput);
+			AddBar(meshBuilder, doorRightBarInput);
 
 			var topBoardsExtents = new Vector3(input.width, 0.0f, input.boardThickness * 0.5f);
 			var topBoardsHeight = frameHeight - doorHeight;
@@ -76,7 +75,7 @@ namespace Common.Prototyping
 				count = input.topBoardsCount
 			};
 
-			AddBoards(meshData, topBoardsInput);
+			AddBoards(meshBuilder, topBoardsInput);
 
 			var sideBoardsOffset = doorOffset + (frameOffset - doorOffset) * 0.5f;
 			var sideBoardsExtents = (topBoardsExtents - doorOffset * 2.0f) * 0.5f;
@@ -97,43 +96,43 @@ namespace Common.Prototyping
 				count = input.sideBoardsCount
 			};
 
-			AddBoards(meshData, leftSideBoardsInput);
-			AddBoards(meshData, rightSideBoardsInput);
+			AddBoards(meshBuilder, leftSideBoardsInput);
+			AddBoards(meshBuilder, rightSideBoardsInput);
 
-			return meshData;
+			return meshBuilder;
 		}
 
-		private static void AddBar(IMeshTriangles meshData, BarInput input)
+		private static void AddBar(FlatMeshBuilder meshBuilder, BarInput input)
 		{
 			var barRotationY = Quaternion.AngleAxis(input.angleY, Vector3.up);
 
 			var v0 = -input.spike + input.offset;
 			var v5 = input.height + input.spike + input.offset;
 
-			for (int i0 = 0; i0 < SquareModel.VCOUNT; ++i0)
+			for (int i0 = 0; i0 < SquareUtility.VCOUNT; ++i0)
 			{
-				int i1 = Mathx.Next(i0, SquareModel.VCOUNT);
+				int i1 = Mathx.NextIndex(i0, SquareUtility.VCOUNT);
 
-				var vertex0 = SquareModel.V3[i0];
-				var vertex1 = SquareModel.V3[i1];
+				var vertex0 = SquareUtility.V3[i0];
+				var vertex1 = SquareUtility.V3[i1];
 
 				var v1 = barRotationY * vertex0 * input.radius + input.offset;
 				var v2 = barRotationY * vertex1 * input.radius + input.offset;
 				var v3 = v1 + input.height;
 				var v4 = v2 + input.height;
 
-				meshData.AddTriangle(v0, v2, v1);
-				meshData.AddTriangle(v1, v2, v4);
-				meshData.AddTriangle(v1, v4, v3);
-				meshData.AddTriangle(v3, v4, v5);
+				meshBuilder.AddTriangle(v0, v2, v1);
+				meshBuilder.AddTriangle(v1, v2, v4);
+				meshBuilder.AddTriangle(v1, v4, v3);
+				meshBuilder.AddTriangle(v3, v4, v5);
 			}
 		}
 
-		private static void AddBoards(IMeshTriangles meshData, BoardsInput input)
+		private static void AddBoards(FlatMeshBuilder meshBuilder, BoardsInput input)
 		{
-			var boardVertices = new Vector3[SquareModel.VCOUNT];
+			var boardVertices = new Vector3[SquareUtility.VCOUNT];
 			for (int i = 0; i < boardVertices.Length; ++i)
-				boardVertices[i] = Mathx.Mul(SquareModel.V3[i], input.extents) + input.offset;
+				boardVertices[i] = Mathx.Multiply(SquareUtility.V3[i], input.extents) + input.offset;
 
 			var boardHeight = input.height / input.count;
 			for (int i = 0; i < input.count; ++i)
@@ -148,14 +147,14 @@ namespace Common.Prototyping
 				var v4 = (v0 + v1) * 0.5f - boardHeight;
 				var v5 = (v2 + v3) * 0.5f - boardHeight;
 
-				meshData.AddTriangle(v0, v1, v2);
-				meshData.AddTriangle(v0, v2, v3);
+				meshBuilder.AddTriangle(v0, v1, v2);
+				meshBuilder.AddTriangle(v0, v2, v3);
 
-				meshData.AddTriangle(v1, v4, v5);
-				meshData.AddTriangle(v1, v5, v2);
+				meshBuilder.AddTriangle(v1, v4, v5);
+				meshBuilder.AddTriangle(v1, v5, v2);
 
-				meshData.AddTriangle(v4, v0, v3);
-				meshData.AddTriangle(v4, v3, v5);
+				meshBuilder.AddTriangle(v4, v0, v3);
+				meshBuilder.AddTriangle(v4, v3, v5);
 			}
 		}
 

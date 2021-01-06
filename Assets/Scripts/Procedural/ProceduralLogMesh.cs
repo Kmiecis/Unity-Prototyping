@@ -1,5 +1,4 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
 
@@ -10,14 +9,14 @@ namespace Common.Prototyping
 		[Header("Parameters")]
 		public Input input = Input.Default;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
 			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var meshBuilder = new FlatMeshBuilder();
 
 			var height = new Vector3(0.0f, input.height, 0.0f);
 			var rotation = Quaternion.AngleAxis(input.angle, Vector3.up);
@@ -31,10 +30,12 @@ namespace Common.Prototyping
 
 			for (int i0 = 0; i0 < input.vertices; ++i0)
 			{
-				int i1 = Mathx.Next(i0, input.vertices);
+				int i1 = Mathx.NextIndex(i0, input.vertices);
 
-				var vertex0 = Geometry.Vertex(i0, input.vertices);
-				var vertex1 = Geometry.Vertex(i1, input.vertices);
+				var u0 = i0 * 1.0f / input.vertices;
+				var u1 = i1 * 1.0f / input.vertices;
+				var vertex0 = Mathx.Direction(u0).X_Y();
+				var vertex1 = Mathx.Direction(u1).X_Y();
 
 				var v1 = vertex0 * input.radius;
 				var v2 = vertex1 * input.radius;
@@ -42,12 +43,12 @@ namespace Common.Prototyping
 				var v3 = rotation * (v1 + height);
 				var v4 = rotation * (v2 + height);
 
-				meshData.AddTriangle(v0, v1, v2);
+				meshBuilder.AddTriangle(v0, v1, v2);
 
-				meshData.AddTriangle(v1, v3, v4);
-				meshData.AddTriangle(v1, v4, v2);
+				meshBuilder.AddTriangle(v1, v3, v4);
+				meshBuilder.AddTriangle(v1, v4, v2);
 
-				meshData.AddTriangle(v5, v4, v3);
+				meshBuilder.AddTriangle(v5, v4, v3);
 
 				var uv1 = new Vector2(i0 * uvStep, 0.25f);
 				var uv2 = new Vector2(i1 * uvStep, 0.25f);
@@ -55,15 +56,15 @@ namespace Common.Prototyping
 				var uv3 = new Vector2(uv1.x, 0.75f);
 				var uv4 = new Vector2(uv2.x, 0.75f);
 
-				meshData.AddUVs(uv0, uv1, uv2);
+				meshBuilder.AddUVs(uv0, uv1, uv2);
 
-				meshData.AddUVs(uv1, uv3, uv4);
-				meshData.AddUVs(uv1, uv4, uv2);
+				meshBuilder.AddUVs(uv1, uv3, uv4);
+				meshBuilder.AddUVs(uv1, uv4, uv2);
 
-				meshData.AddUVs(uv5, uv4, uv3);
+				meshBuilder.AddUVs(uv5, uv4, uv3);
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
 		[Serializable]

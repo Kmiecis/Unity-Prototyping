@@ -1,5 +1,4 @@
-﻿using Common.Rendering;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Common.Prototyping
 {
@@ -7,7 +6,7 @@ namespace Common.Prototyping
 	{
 		public bool IsDirty { get; set; }
 
-		public abstract ITextureData Create();
+		public abstract ITexture2DBuilder Create();
 
 #if UNITY_EDITOR
 		private void OnValidate()

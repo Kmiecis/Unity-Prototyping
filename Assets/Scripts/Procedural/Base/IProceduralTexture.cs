@@ -1,9 +1,7 @@
-﻿using Common.Rendering;
-
-namespace Common.Prototyping
+﻿namespace Common.Prototyping
 {
 	public interface IProceduralTexture
 	{
-		ITextureData Create();
+		ITexture2DBuilder Create();
 	}
 }

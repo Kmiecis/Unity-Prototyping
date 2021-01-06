@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -11,30 +10,26 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshData Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshData();
+			var meshBuilder = new FlatMeshBuilder();
+			var random = new Random(input.seed);
 
 			var vz = new Vector3(0.0f, 0.0f, 0.0f);
 			var vh = new Vector3(0.0f, input.height, 0.0f);
 
-			for (int i0 = 0; i0 < HexModel.VCOUNT; ++i0)
+			for (int i0 = 0; i0 < HexagonUtility.VCOUNT; ++i0)
 			{
-				int i1 = Mathx.Next(i0, HexModel.VCOUNT);
+				int i1 = Mathx.NextIndex(i0, HexagonUtility.VCOUNT);
 
-				var vertex0 = HexModel.V3[i0];
-				var vertex1 = HexModel.V3[i1];
+				var vertex0 = HexagonUtility.V3[i0];
+				var vertex1 = HexagonUtility.V3[i1];
 
 				var v0 = vertex0 * input.radius;
 				var v1 = vertex1 * input.radius;
@@ -44,7 +39,7 @@ namespace Common.Prototyping
 				var v3 = v1 + vh;
 				var v23 = (v2 + v3) * 0.5f;
 
-				bool hasBaseCrack = Random.Range(0, 2) == 0;
+				bool hasBaseCrack = random.Next(0, 2) == 0;
 				if (hasBaseCrack)
 				{
 					/*
@@ -66,11 +61,11 @@ namespace Common.Prototyping
                     }
 					*/
 					var crackSizeMultiplier = 1f;
-					var randomCrackLength = Mathf.Max(Random.Range(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
-					var randomCrackWidth = Mathf.Max(Random.Range(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
-					var randomCrackDepth = Mathf.Max(Random.Range(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
+					var randomCrackLength = Mathf.Max(random.NextFloat(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
+					var randomCrackWidth = Mathf.Max(random.NextFloat(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
+					var randomCrackDepth = Mathf.Max(random.NextFloat(0f, 1f) * crackSizeMultiplier, input.crackLengthMin);
 
-					var randomWidthPointDistance = Mathf.Max(Random.Range(0f, 1f - randomCrackWidth), input.crackMinOffset);
+					var randomWidthPointDistance = Mathf.Max(random.NextFloat(0f, 1f - randomCrackWidth), input.crackMinOffset);
 					randomCrackWidth = Mathf.Min(randomCrackWidth, 1f - randomWidthPointDistance - input.crackMinOffset);
 
 					var vc0 = Vector3.Lerp(v0, v1, randomWidthPointDistance);
@@ -80,32 +75,32 @@ namespace Common.Prototyping
 					var vcz = Vector3.Lerp(v01, vz, randomCrackDepth);
 
 					// Right quad
-					meshData.AddTriangle(v0, vc0, vch);
-					meshData.AddTriangle(v0, vch, v2);
+					meshBuilder.AddTriangle(v0, vc0, vch);
+					meshBuilder.AddTriangle(v0, vch, v2);
 
 					// Top triangle
-					meshData.AddTriangle(v2, vch, v3);
+					meshBuilder.AddTriangle(v2, vch, v3);
 
 					// Left quad
-					meshData.AddTriangle(vc1, v1, v3);
-					meshData.AddTriangle(vc1, v3, vch);
+					meshBuilder.AddTriangle(vc1, v1, v3);
+					meshBuilder.AddTriangle(vc1, v3, vch);
 
 					// Depth triangles
-					meshData.AddTriangle(vcz, vch, vc0);
-					meshData.AddTriangle(vcz, vc1, vch);
+					meshBuilder.AddTriangle(vcz, vch, vc0);
+					meshBuilder.AddTriangle(vcz, vc1, vch);
 				}
 				else
 				{
-					meshData.AddTriangle(v0, v1, v3);
-					meshData.AddTriangle(v0, v3, v2);
+					meshBuilder.AddTriangle(v0, v1, v3);
+					meshBuilder.AddTriangle(v0, v3, v2);
 				}
 				// if Base then crack starts between v0 & v1
 				// if Edge then crack starts between v2 & v3
 
-				meshData.AddTriangle(v2, v3, vh);
+				meshBuilder.AddTriangle(v2, v3, vh);
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
 		private enum CrackSize
@@ -124,6 +119,7 @@ namespace Common.Prototyping
 			[Range(0.0f, 1.0f)] public float crackLengthMin;
 			[Range(0.0f, 1.0f)] public float crackLengthStep;
 			[Range(0.0f, 0.5f)] public float crackMinOffset;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{

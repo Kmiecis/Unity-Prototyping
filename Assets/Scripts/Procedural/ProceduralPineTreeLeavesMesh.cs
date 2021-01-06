@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -10,20 +9,17 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed = 5;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var meshBuilder = new FlatMeshBuilder();
+
+			var random = new Random(input.seed);
 
 			var height = input.height * input.fill;
 			var baseHeight = input.height - height;
@@ -49,26 +45,28 @@ namespace Common.Prototyping
 				var uv1 = new Vector2(1.0f, uvdb);
 				var uvt = new Vector2(0.5f, uvdt);
 
-				var angleOffset = Random.Range(0f, input.maxAngleOffset);
-				for (int i0 = 0; i0 < HexModel.VCOUNT; ++i0)
+				var angleOffset = random.NextFloat(0f, input.maxAngleOffset);
+				for (int i0 = 0; i0 < HexagonUtility.VCOUNT; ++i0)
 				{
-					int i1 = Mathx.Next(i0, HexModel.VCOUNT);
+					int i1 = Mathx.NextIndex(i0, HexagonUtility.VCOUNT);
 
-					var vertex0 = Geometry.Vertex(i1, HexModel.VCOUNT, angleOffset);
-					var vertex1 = Geometry.Vertex(i0, HexModel.VCOUNT, angleOffset);
+					var u0 = i1 * 1.0f / HexagonUtility.VCOUNT + angleOffset;
+					var u1 = i0 * 1.0f / HexagonUtility.VCOUNT + angleOffset;
+					var vertex0 = Mathx.Direction(u0).X_Y();
+					var vertex1 = Mathx.Direction(u1).X_Y();
 
 					var v0 = vertex0 * radius + vb;
 					var v1 = vertex1 * radius + vb;
 
-					meshData.AddTriangle(v0, v1, vt);
+					meshBuilder.AddTriangle(v0, v1, vt);
 
-					meshData.AddUVs(uv0, uv1, uvt);
+					meshBuilder.AddUVs(uv0, uv1, uvt);
 
 					vertex0 = vertex1;
 				}
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
 		[Serializable]
@@ -81,6 +79,7 @@ namespace Common.Prototyping
 			[Range(0f, 1f)] public float overlaps;
 			[Range(0f, 1f)] public float smoothing;
 			[Range(0f, 1f)] public float maxAngleOffset;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{
@@ -90,6 +89,7 @@ namespace Common.Prototyping
 				radius = 0.5f,
 				overlaps = 0.7f,
 				smoothing = 0.55f,
+				seed = 5
 			};
 		}
 	}

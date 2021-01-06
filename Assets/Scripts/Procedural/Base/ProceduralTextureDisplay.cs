@@ -26,8 +26,8 @@ namespace Common.Prototyping
 		{
 			if (m_ProceduralTexture != null)
 			{
-				var textureData = m_ProceduralTexture.Create();
-				m_Texture = textureData.CreateTexture();
+				var textureBuilder = m_ProceduralTexture.Create();
+				m_Texture = textureBuilder.Build();
 
 				m_Texture.alphaIsTransparency = m_AlphaIsTransparency;
 			}
@@ -38,12 +38,12 @@ namespace Common.Prototyping
 
 		public void Save()
 		{
-			m_Texture = AssetDatabaseTools.CreateOrReplaceAssetAtPath(m_Texture, GetPathToAsset());
+			m_Texture = AssetDatabaseUtility.CreateOrReplaceAssetAtPath(m_Texture, GetPathToAsset());
 		}
 
 		private string GetPathToAsset()
 		{
-			return AssetDatabaseTools.ConstructPathToAsset(m_AssetPath, m_AssetName, AssetDatabaseTools.EAssetType.Other);
+			return AssetDatabaseUtility.ConstructPathToAsset(m_AssetPath, m_AssetName, AssetDatabaseUtility.EAssetType.Other);
 		}
 
 #if UNITY_EDITOR

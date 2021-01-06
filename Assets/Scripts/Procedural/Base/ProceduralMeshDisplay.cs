@@ -23,8 +23,8 @@ namespace Common.Prototyping
 		{
 			if (m_ProceduralMesh != null)
 			{
-				var meshData = m_ProceduralMesh.Create();
-				m_Mesh = meshData.CreateMesh();
+				var meshBuilder = m_ProceduralMesh.Create();
+				m_Mesh = meshBuilder.Build();
 			}
 
 			if (m_MeshFilter != null)
@@ -33,12 +33,12 @@ namespace Common.Prototyping
 
 		public void Save()
 		{
-			m_Mesh = AssetDatabaseTools.CreateOrReplaceAssetAtPath(m_Mesh, GetPathToAsset());
+			m_Mesh = AssetDatabaseUtility.CreateOrReplaceAssetAtPath(m_Mesh, GetPathToAsset());
 		}
 
 		private string GetPathToAsset()
 		{
-			return AssetDatabaseTools.ConstructPathToAsset(m_AssetPath, m_AssetName, AssetDatabaseTools.EAssetType.Other);
+			return AssetDatabaseUtility.ConstructPathToAsset(m_AssetPath, m_AssetName, AssetDatabaseUtility.EAssetType.Other);
 		}
 
 #if UNITY_EDITOR

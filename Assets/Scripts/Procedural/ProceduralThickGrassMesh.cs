@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -10,20 +9,17 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var meshBuilder = new FlatMeshBuilder();
+
+			var random = new Random(input.seed);
 
 			var unbendHeight = input.height * input.bendThreshold;
 			var bendHeight = input.height - unbendHeight;
@@ -42,21 +38,23 @@ namespace Common.Prototyping
 				for (int x = 0; x < input.count.x; x++)
 				{
 					float offsetX = input.size.x * (x * 1.0f / input.count.x - 0.5f) + input.size.x * 0.5f / input.count.x;
-					CreateSingleGrass(meshData, input, innerInput, new Vector3(offsetX, 0.0f, offsetY));
+					CreateSingleGrass(meshBuilder, input, innerInput, new Vector3(offsetX, 0.0f, offsetY), ref random);
 				}
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
-		private static void CreateSingleGrass(FlatMeshDataUVs meshData, in Input input, in InnerInput innerInput, Vector3 offset)
+		private static void CreateSingleGrass(FlatMeshBuilder meshBuilder, in Input input, in InnerInput innerInput, Vector3 offset, ref Random random)
 		{
-			int randomIndex = Random.Range(0, HexModel.VCOUNT);
-			var randomIndexOffset = Random.Range(0.0f, 1.0f);
-			var randomStrength = (randomIndex + randomIndexOffset) / HexModel.VCOUNT;
+			int randomIndex = random.Next(0, HexagonUtility.VCOUNT);
+			var randomIndexOffset = random.NextFloat(0.0f, 1.0f);
+			var randomStrength = (randomIndex + randomIndexOffset) / HexagonUtility.VCOUNT;
 
-			var vertex0 = Geometry.Vertex(randomIndex + 0, HexModel.VCOUNT, randomIndexOffset);
-			var vertex1 = Geometry.Vertex(randomIndex + 2, HexModel.VCOUNT, randomIndexOffset);
+			var u0 = (randomIndex + 0) * 1.0f / HexagonUtility.VCOUNT + randomIndexOffset;
+			var u1 = (randomIndex + 2) * 1.0f / HexagonUtility.VCOUNT + randomIndexOffset;
+			var vertex0 = Mathx.Direction(u0).X_Y();
+			var vertex1 = Mathx.Direction(u1).X_Y();
 
 			var h0 = new Vector3(0.0f, innerInput.unbendHeight + innerInput.bendHeightHalf * randomStrength, 0.0f);
 			var h1 = new Vector3(0.0f, innerInput.bendHeightHalf, 0.0f);
@@ -91,38 +89,38 @@ namespace Common.Prototyping
 			var uv6 = new Vector2(0.5f, 1.0f);
 
 			// Bottom front quad
-			meshData.AddTriangle(v0, v2, v3);
-			meshData.AddTriangle(v0, v3, v1);
+			meshBuilder.AddTriangle(v0, v2, v3);
+			meshBuilder.AddTriangle(v0, v3, v1);
 			// Bottom back quad
-			meshData.AddTriangle(v1, v3, v0);
-			meshData.AddTriangle(v3, v2, v0);
+			meshBuilder.AddTriangle(v1, v3, v0);
+			meshBuilder.AddTriangle(v3, v2, v0);
 			// Middle front quad
-			meshData.AddTriangle(v2, v4, v5);
-			meshData.AddTriangle(v2, v5, v3);
+			meshBuilder.AddTriangle(v2, v4, v5);
+			meshBuilder.AddTriangle(v2, v5, v3);
 			// Middle back quad
-			meshData.AddTriangle(v3, v5, v2);
-			meshData.AddTriangle(v5, v4, v2);
+			meshBuilder.AddTriangle(v3, v5, v2);
+			meshBuilder.AddTriangle(v5, v4, v2);
 			// Top front triangle
-			meshData.AddTriangle(v4, v6, v5);
+			meshBuilder.AddTriangle(v4, v6, v5);
 			// Top back triangle
-			meshData.AddTriangle(v5, v6, v4);
+			meshBuilder.AddTriangle(v5, v6, v4);
 
 			// Bottom front quad
-			meshData.AddUVs(uv0, uv2, uv3);
-			meshData.AddUVs(uv0, uv3, uv1);
+			meshBuilder.AddUVs(uv0, uv2, uv3);
+			meshBuilder.AddUVs(uv0, uv3, uv1);
 			// Bottom back quad
-			meshData.AddUVs(uv1, uv3, uv0);
-			meshData.AddUVs(uv3, uv2, uv0);
+			meshBuilder.AddUVs(uv1, uv3, uv0);
+			meshBuilder.AddUVs(uv3, uv2, uv0);
 			// Middle front quad
-			meshData.AddUVs(uv2, uv4, uv5);
-			meshData.AddUVs(uv2, uv5, uv3);
+			meshBuilder.AddUVs(uv2, uv4, uv5);
+			meshBuilder.AddUVs(uv2, uv5, uv3);
 			// Middle back quad
-			meshData.AddUVs(uv3, uv5, uv2);
-			meshData.AddUVs(uv5, uv4, uv2);
+			meshBuilder.AddUVs(uv3, uv5, uv2);
+			meshBuilder.AddUVs(uv5, uv4, uv2);
 			// Top front triangle
-			meshData.AddUVs(uv4, uv6, uv5);
+			meshBuilder.AddUVs(uv4, uv6, uv5);
 			// Top back triangle
-			meshData.AddUVs(uv5, uv6, uv4);
+			meshBuilder.AddUVs(uv5, uv6, uv4);
 		}
 
 		[Serializable]
@@ -134,6 +132,7 @@ namespace Common.Prototyping
 			[Range(0.0f, 0.5f)] public float radius;
 			[Range(0.0f, 1.0f)] public float bendThreshold;
 			[Range(0.0f, 1.0f)] public float curveStrength;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{

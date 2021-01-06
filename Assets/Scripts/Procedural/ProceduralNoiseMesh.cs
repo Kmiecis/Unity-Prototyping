@@ -1,5 +1,4 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -16,20 +15,20 @@ namespace Common.Prototyping
 		private Mesh m_Mesh;
 #endif
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
 #if UNITY_EDITOR
 			var result = Create(in input);
-			m_Mesh = result.CreateMesh();
+			m_Mesh = result.Build();
 			return result;
 #else
 			return Create(in input);
 #endif
 		}
 
-		public static FlatMeshData Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshData();
+			var meshBuilder = new FlatMeshBuilder();
 
 			var extents = new Vector2Int(input.width, input.height);
 			var scale = new Vector2(input.scale, input.scale);
@@ -85,7 +84,7 @@ namespace Common.Prototyping
 				}
 			}
 			
-			var ts = Triangulation.Simple(meshPoints);
+			var ts = Triangulate.Simple(meshPoints);
 			for (int i = 0; i < ts.Count; i += 3)
 			{
 				var t0 = ts[i + 0];
@@ -100,14 +99,14 @@ namespace Common.Prototyping
 				var h1 = noiseMap[Mathf.RoundToInt(v1.x * input.width), Mathf.RoundToInt(v1.y * input.height)] * input.multiplier;
 				var h2 = noiseMap[Mathf.RoundToInt(v2.x * input.width), Mathf.RoundToInt(v2.y * input.height)] * input.multiplier;
 
-				meshData.AddTriangle(
+				meshBuilder.AddTriangle(
 					new Vector3(v0.x, h0, v0.y),
 					new Vector3(v1.x, h1, v1.y),
 					new Vector3(v2.x, h2, v2.y)
 				);
 			}
 			
-			return meshData;
+			return meshBuilder;
 		}
 
 #if UNITY_EDITOR
@@ -125,16 +124,10 @@ namespace Common.Prototyping
 					var v1 = vertices[t + 1];
 					var v2 = vertices[t + 2];
 
-					var circle = Circle2.Create(
-						new Vector2(v0.x, v0.z),
-						new Vector2(v1.x, v1.z),
-						new Vector2(v2.x, v2.z)
-					);
-					Handles.DrawWireDisc(
-						new Vector3(circle.position.x, 0.0f, circle.position.y) + this.transform.position,
-						n,
-						circle.radius
-					);
+					if (CircleUtility.Create(v0.XZ(), v1.XZ(), v2.XZ(), out Vector2 c, out float r))
+					{
+						Handles.DrawWireDisc(c.X_Y() + this.transform.position, n, r);
+					}
 				}
 
 				for (int v = 0; v < vertices.Length; ++v)

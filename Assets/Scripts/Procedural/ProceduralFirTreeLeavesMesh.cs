@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -10,20 +9,16 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshDataUVs Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshDataUVs();
+			var random = new Random(input.seed);
+			var meshBuilder = new FlatMeshBuilder();
 
 			var height = input.height * input.fill;
 			var baseHeight = input.height - height;
@@ -63,12 +58,12 @@ namespace Common.Prototyping
 
 				var uv7 = new Vector2(0.5f, uvds);
 
-				for (int i0 = 0; i0 < HexModel.VCOUNT; ++i0)
+				for (int i0 = 0; i0 < HexagonUtility.VCOUNT; ++i0)
 				{
-					int i1 = Mathx.Next(i0, HexModel.VCOUNT);
+					int i1 = Mathx.NextIndex(i0, HexagonUtility.VCOUNT);
 
-					var vertex1 = HexModel.V3[i0];
-					var vertex2 = HexModel.V3[i1];
+					var vertex1 = HexagonUtility.V3[i0];
+					var vertex2 = HexagonUtility.V3[i1];
 
 					// Split vertices
 					var v1 = vertex1 * splitRadius + vs;
@@ -85,7 +80,7 @@ namespace Common.Prototyping
 					// Inner top vertex
 					var v7 = vs;
 
-					var leaves = (LeavesType)Random.Range(0, (int)LeavesType.ALL);
+					var leaves = (LeavesType)random.Next(0, (int)LeavesType.ALL);
 
 					if ((leaves & LeavesType.OFFSET_LEFT) == LeavesType.NONE)
 					{
@@ -112,8 +107,8 @@ namespace Common.Prototyping
 					if ((leaves & LeavesType.CUT_LEFT) == LeavesType.NONE)
 					{
 						// Add side
-						meshData.AddTriangle(v5, v3, v1);
-						meshData.AddUVs(uv5, uv3, uv1);
+						meshBuilder.AddTriangle(v5, v3, v1);
+						meshBuilder.AddUVs(uv5, uv3, uv1);
 					}
 					else
 					{
@@ -121,21 +116,21 @@ namespace Common.Prototyping
 						v3 = Vector3.Lerp(v3, v4, input.thickness);
 						var uv40 = new Vector2(0, Mathf.Clamp((v40.y - baseOffset) * invLeavesHeight, 0, 1));
 
-						meshData.AddTriangle(v40, v3, v1);
-						meshData.AddUVs(uv3, uv1, uv40);
+						meshBuilder.AddTriangle(v40, v3, v1);
+						meshBuilder.AddUVs(uv3, uv1, uv40);
 
 						// Add sides
-						meshData.AddTriangle(v40, v5, v3);
-						meshData.AddTriangle(v40, v1, v5);
-						meshData.AddUVs(uv3, uv40, uv5);
-						meshData.AddUVs(uv5, uv40, uv1);
+						meshBuilder.AddTriangle(v40, v5, v3);
+						meshBuilder.AddTriangle(v40, v1, v5);
+						meshBuilder.AddUVs(uv3, uv40, uv5);
+						meshBuilder.AddUVs(uv5, uv40, uv1);
 					}
 
 					if ((leaves & LeavesType.CUT_RIGHT) == LeavesType.NONE)
 					{
 						// Add side
-						meshData.AddTriangle(v2, v4, v6);
-						meshData.AddUVs(uv2, uv4, uv6);
+						meshBuilder.AddTriangle(v2, v4, v6);
+						meshBuilder.AddUVs(uv2, uv4, uv6);
 					}
 					else
 					{
@@ -143,45 +138,45 @@ namespace Common.Prototyping
 						v4 = Vector3.Lerp(v4, v3, input.thickness);
 						var uv30 = new Vector2(1, Mathf.Clamp((v30.y - baseOffset) * invLeavesHeight, 0, 1));
 
-						meshData.AddTriangle(v2, v4, v30);
-						meshData.AddUVs(uv2, uv4, uv30);
+						meshBuilder.AddTriangle(v2, v4, v30);
+						meshBuilder.AddUVs(uv2, uv4, uv30);
 
 						// Add sides
-						meshData.AddTriangle(v4, v6, v30);
-						meshData.AddTriangle(v6, v2, v30);
-						meshData.AddUVs(uv4, uv6, uv30);
-						meshData.AddUVs(uv6, uv2, uv30);
+						meshBuilder.AddTriangle(v4, v6, v30);
+						meshBuilder.AddTriangle(v6, v2, v30);
+						meshBuilder.AddUVs(uv4, uv6, uv30);
+						meshBuilder.AddUVs(uv6, uv2, uv30);
 					}
 
 					// Add top triangle
-					meshData.AddTriangle(vt, v1, v2);
-					meshData.AddUVs(uvt, uv1, uv2);
+					meshBuilder.AddTriangle(vt, v1, v2);
+					meshBuilder.AddUVs(uvt, uv1, uv2);
 
 					// Add top quad
-					meshData.AddTriangle(v1, v3, v2);
-					meshData.AddTriangle(v2, v3, v4);
-					meshData.AddUVs(uv1, uv3, uv2);
-					meshData.AddUVs(uv2, uv3, uv4);
+					meshBuilder.AddTriangle(v1, v3, v2);
+					meshBuilder.AddTriangle(v2, v3, v4);
+					meshBuilder.AddUVs(uv1, uv3, uv2);
+					meshBuilder.AddUVs(uv2, uv3, uv4);
 
 					// Add bottom quad
-					meshData.AddTriangle(v3, v5, v4);
-					meshData.AddTriangle(v4, v5, v6);
-					meshData.AddUVs(uv3, uv5, uv4);
-					meshData.AddUVs(uv4, uv5, uv6);
+					meshBuilder.AddTriangle(v3, v5, v4);
+					meshBuilder.AddTriangle(v4, v5, v6);
+					meshBuilder.AddUVs(uv3, uv5, uv4);
+					meshBuilder.AddUVs(uv4, uv5, uv6);
 
 					// Add bottom triangle
-					meshData.AddTriangle(v5, v7, v6);
-					meshData.AddUVs(uv5, uv7, uv6);
+					meshBuilder.AddTriangle(v5, v7, v6);
+					meshBuilder.AddUVs(uv5, uv7, uv6);
 
 					// Add remaining left and right side
-					meshData.AddTriangle(v7, v5, v1);
-					meshData.AddTriangle(v7, v2, v6);
-					meshData.AddUVs(uv7, uv5, uv1);
-					meshData.AddUVs(uv7, uv2, uv6);
+					meshBuilder.AddTriangle(v7, v5, v1);
+					meshBuilder.AddTriangle(v7, v2, v6);
+					meshBuilder.AddUVs(uv7, uv5, uv1);
+					meshBuilder.AddUVs(uv7, uv2, uv6);
 				}
 			}
 
-			return meshData;
+			return meshBuilder;
 		}
 
 		[Serializable]
@@ -196,6 +191,7 @@ namespace Common.Prototyping
 			[Range(0.0f, 1.0f)] public float split;
 			[Range(0.0f, 1.0f)] public float thickness;
 			[Range(0.0f, 1.0f)] public float offset;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{

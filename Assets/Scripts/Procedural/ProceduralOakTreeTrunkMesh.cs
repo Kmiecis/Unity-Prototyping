@@ -1,8 +1,7 @@
 ﻿using Common.Mathematics;
-using Common.Rendering;
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Common.Prototyping
 {
@@ -11,21 +10,17 @@ namespace Common.Prototyping
 	{
 		[Header("Properties")]
 		public Input input = Input.Default;
-		public int seed;
 
-		public override IMeshData Create()
+		public override IMeshBuilder Create()
 		{
-			var randomState = Random.state;
-			Random.InitState(seed);
-			var result = Create(in input);
-			Random.state = randomState;
-			return result;
+			return Create(in input);
 		}
 
-		public static FlatMeshData Create(in Input input)
+		public static FlatMeshBuilder Create(in Input input)
 		{
-			var meshData = new FlatMeshData();
+			var meshBuilder = new FlatMeshBuilder();
 
+			var random = new Random(input.seed);
 			var trunkInput = new BranchInput
 			{
 				height = input.height * 0.5f,
@@ -35,22 +30,22 @@ namespace Common.Prototyping
 				splits = input.splits
 			};
 
-			CreateBranch(trunkInput, meshData);
+			CreateBranch(trunkInput, meshBuilder, ref random);
 
-			return meshData;
+			return meshBuilder;
 		}
 
-		private static void CreateBranch(BranchInput input, FlatMeshData meshData)
+		private static void CreateBranch(BranchInput input, FlatMeshBuilder meshBuilder, ref Random random)
 		{
 			var dh = input.direction * input.height;
 			var rotation = Quaternion.FromToRotation(Vector3.up, input.direction);
 
-			for (int i0 = 0; i0 < HexModel.VCOUNT; ++i0)
+			for (int i0 = 0; i0 < HexagonUtility.VCOUNT; ++i0)
 			{
-				int i1 = Mathx.Next(i0, HexModel.VCOUNT);
+				int i1 = Mathx.NextIndex(i0, HexagonUtility.VCOUNT);
 
-				var vertex0 = HexModel.V3[i0];
-				var vertex1 = HexModel.V3[i1];
+				var vertex0 = HexagonUtility.V3[i0];
+				var vertex1 = HexagonUtility.V3[i1];
 				
 				var v0r = rotation * vertex0;
 				var v1r = rotation * vertex1;
@@ -61,20 +56,20 @@ namespace Common.Prototyping
 				var v2 = v0 + dh;
 				var v3 = v1 + dh;
 
-				meshData.AddTriangle(v0, v1, v3);
-				meshData.AddTriangle(v0, v3, v2);
+				meshBuilder.AddTriangle(v0, v1, v3);
+				meshBuilder.AddTriangle(v0, v3, v2);
 			}
 
 			var splits = input.splits - 1;
 			if (splits < 0)
 				return;
 
-			var radiusScale = Random.Range(0.3f, 0.7f);
+			var radiusScale = random.NextFloat(0.3f, 0.7f);
 			var leftRadius = input.radius * radiusScale;
 			var rightRadius = input.radius - leftRadius;
 
-			var leftDirection = Mathx.Direction(Random.Range(0.0f, 0.5f), Random.Range(0.0f, 1.0f));
-			var rightDirection = Mathx.Direction(Random.Range(0.0f, 0.5f), Random.Range(0.0f, 1.0f));
+			var leftDirection = Mathx.Direction(random.NextFloat(0.0f, 0.5f), random.NextFloat(0.0f, 1.0f));
+			var rightDirection = Mathx.Direction(random.NextFloat(0.0f, 0.5f), random.NextFloat(0.0f, 1.0f));
 
 			var nextHeight = input.height * 0.5f;
 
@@ -96,8 +91,8 @@ namespace Common.Prototyping
 				splits = splits
 			};
 
-			CreateBranch(leftBranchInput, meshData);
-			CreateBranch(rightBranchInput, meshData);
+			CreateBranch(leftBranchInput, meshBuilder, ref random);
+			CreateBranch(rightBranchInput, meshBuilder, ref random);
 		}
 
 		private struct BranchInput
@@ -116,6 +111,7 @@ namespace Common.Prototyping
 			[Range(0, 10)] public int splits;
 			[Range(0f, 2f)] public float radius;
 			[Range(0f, 90f)] public float angle;
+			public int seed;
 
 			public static readonly Input Default = new Input
 			{
