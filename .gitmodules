@@ -1,3 +1,6 @@
 [submodule "Assets/Scripts/Common"]
 	path = Assets/Scripts/Common
 	url = https://www.github.com/Kmiecis/Unity-Common
+[submodule "Assets/Scripts/Prototyping"]
+	path = Assets/Scripts/Prototyping
+	url = https://www.github.com/Kmiecis/Unity-Prototyping
