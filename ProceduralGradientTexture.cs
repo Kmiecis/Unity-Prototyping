@@ -22,13 +22,13 @@ namespace Common.Prototyping
 				case Input.Axis.Horizontal:
 					for (int x = 0; x < input.width; ++x)
 						for (int y = 0; y < input.height; ++y)
-							textureBuilder[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, x * 1.0f / input.width);
+							textureBuilder[x, y] = Color32.Lerp(ColorUtility.WHITE, ColorUtility.CLEAR, x * 1.0f / input.width);
 					break;
 
 				case Input.Axis.Vertical:
 					for (int x = 0; x < input.width; ++x)
 						for (int y = 0; y < input.height; ++y)
-							textureBuilder[x, y] = Color32.Lerp(COLOR_WHITE, COLOR_ALPHA, y * 1.0f / input.height);
+							textureBuilder[x, y] = Color32.Lerp(ColorUtility.WHITE, ColorUtility.CLEAR, y * 1.0f / input.height);
 					break;
 			}
 

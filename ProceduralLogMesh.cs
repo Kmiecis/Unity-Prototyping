@@ -1,5 +1,4 @@
-﻿using Common.Mathematics;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Common.Prototyping
