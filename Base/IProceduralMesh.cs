@@ -1,7 +1,7 @@
 ﻿namespace Common
 {
-	public interface IProceduralMesh
-	{
-		IMeshBuilder Create();
-	}
+    public interface IProceduralMesh
+    {
+        IMeshBuilder Create();
+    }
 }
