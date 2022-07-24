@@ -8,7 +8,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override ITexture2DBuilder Create()
+        public override Texture2DBuilder Create()
         {
             return Create(in input);
         }

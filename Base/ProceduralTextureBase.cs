@@ -6,7 +6,7 @@ namespace Common.Prototyping
     [RequireComponent(typeof(MeshRenderer))]
     public abstract class ProceduralTextureBase : MonoBehaviour, IProceduralTexture
     {
-        public abstract ITexture2DBuilder Create();
+        public abstract Texture2DBuilder Create();
 
 #if UNITY_EDITOR
         private void OnValidate()

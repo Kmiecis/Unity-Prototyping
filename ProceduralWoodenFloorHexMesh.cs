@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 
 namespace Common.Prototyping
@@ -8,7 +10,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -23,7 +25,7 @@ namespace Common.Prototyping
             var uvMultiplier = new Vector3(0.5f / CENTER_TO_VERTEX, 0.0f, 0.5f / CENTER_TO_SIDE);
 
             var vz = new Vector3(0.0f, 0.0f, 0.0f);
-            var vertices = Hexagons.Vertices();
+            var vertices = Hexagons.Vertices;
             for (int i0 = 0; i0 < Hexagons.VERTEX_COUNT; i0 += 2)
             {
                 int i1 = Mathx.NextIndex(i0, Hexagons.VERTEX_COUNT);
@@ -64,16 +66,19 @@ namespace Common.Prototyping
                     var vb2 = vb0 + v0vz - 2 * v1v2ShrinkStep;
                     var vb3 = vb1 + v0vz - 2 * v1v2ShrinkStep;
 
-                    meshBuilder.AddTriangle(vb0 * input.radius, vb1 * input.radius, vb3 * input.radius);
-                    meshBuilder.AddTriangle(vb0 * input.radius, vb3 * input.radius, vb2 * input.radius);
-                    
-                    var uv0 = Mathx.Multiply(uvMultiplier, vb0 + uvOffset).XZ();
-                    var uv1 = Mathx.Multiply(uvMultiplier, vb1 + uvOffset).XZ();
-                    var uv2 = Mathx.Multiply(uvMultiplier, vb2 + uvOffset).XZ();
-                    var uv3 = Mathx.Multiply(uvMultiplier, vb3 + uvOffset).XZ();
+                    var uv0 = Mathx.Mul(uvMultiplier, vb0 + uvOffset).XZ();
+                    var uv1 = Mathx.Mul(uvMultiplier, vb1 + uvOffset).XZ();
+                    var uv2 = Mathx.Mul(uvMultiplier, vb2 + uvOffset).XZ();
+                    var uv3 = Mathx.Mul(uvMultiplier, vb3 + uvOffset).XZ();
 
-                    meshBuilder.AddUVs(uv0, uv1, uv3);
-                    meshBuilder.AddUVs(uv0, uv3, uv2);
+                    meshBuilder.AddTriangle(
+                        vb0 * input.radius, vb1 * input.radius, vb3 * input.radius,
+                        uv0, uv1, uv3
+                    );
+                    meshBuilder.AddTriangle(
+                        vb0 * input.radius, vb3 * input.radius, vb2 * input.radius,
+                        uv0, uv3, uv2
+                    );
                 }
             }
 

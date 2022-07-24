@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +16,7 @@ namespace Common.Prototyping
         private Mesh m_Mesh;
 #endif
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
 #if UNITY_EDITOR
             var result = Create(in input);
@@ -31,8 +33,10 @@ namespace Common.Prototyping
 
             var extents = new Vector2Int(input.width, input.height);
             var scale = new Vector2(input.scale, input.scale);
-            var noiseMap = Noisex.SmoothMap(
-                extents.x, extents.y, input.offset.x, input.offset.y,
+            var noiseMap = new float[extents.x, extents.y];
+            Noisex.GetNoiseMap(
+                noiseMap,
+                input.offset.x, input.offset.y,
                 input.octaves, input.persistance, input.lacunarity,
                 scale.x, scale.y, input.seed
             );

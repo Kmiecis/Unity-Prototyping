@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -9,7 +11,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -57,7 +59,7 @@ namespace Common.Prototyping
 
                 var uv7 = new Vector2(0.5f, uvds);
 
-                var vertices = Hexagons.Vertices();
+                var vertices = Hexagons.Vertices;
                 for (int i0 = vertices.Length - 1, i1 = 0; i1 < vertices.Length; i0 = i1++)
                 {
                     var vertex1 = vertices[i0].X_Y();
@@ -105,8 +107,10 @@ namespace Common.Prototyping
                     if ((leaves & LeavesType.CUT_LEFT) == LeavesType.NONE)
                     {
                         // Add side
-                        meshBuilder.AddTriangle(v5, v3, v1);
-                        meshBuilder.AddUVs(uv5, uv3, uv1);
+                        meshBuilder.AddTriangle(
+                            v5, v3, v1,
+                            uv5, uv3, uv1
+                        );
                     }
                     else
                     {
@@ -114,21 +118,29 @@ namespace Common.Prototyping
                         v3 = Vector3.Lerp(v3, v4, input.thickness);
                         var uv40 = new Vector2(0, Mathf.Clamp((v40.y - baseOffset) * invLeavesHeight, 0, 1));
 
-                        meshBuilder.AddTriangle(v40, v3, v1);
-                        meshBuilder.AddUVs(uv3, uv1, uv40);
+                        meshBuilder.AddTriangle(
+                            v40, v3, v1,
+                            uv3, uv1, uv40
+                        );
 
                         // Add sides
-                        meshBuilder.AddTriangle(v40, v5, v3);
-                        meshBuilder.AddTriangle(v40, v1, v5);
-                        meshBuilder.AddUVs(uv3, uv40, uv5);
-                        meshBuilder.AddUVs(uv5, uv40, uv1);
+                        meshBuilder.AddTriangle(
+                            v40, v5, v3,
+                            uv3, uv40, uv5
+                        );
+                        meshBuilder.AddTriangle(
+                            v40, v1, v5,
+                            uv5, uv40, uv1
+                        );
                     }
 
                     if ((leaves & LeavesType.CUT_RIGHT) == LeavesType.NONE)
                     {
                         // Add side
-                        meshBuilder.AddTriangle(v2, v4, v6);
-                        meshBuilder.AddUVs(uv2, uv4, uv6);
+                        meshBuilder.AddTriangle(
+                            v2, v4, v6,
+                            uv2, uv4, uv6
+                        );
                     }
                     else
                     {
@@ -136,41 +148,63 @@ namespace Common.Prototyping
                         v4 = Vector3.Lerp(v4, v3, input.thickness);
                         var uv30 = new Vector2(1, Mathf.Clamp((v30.y - baseOffset) * invLeavesHeight, 0, 1));
 
-                        meshBuilder.AddTriangle(v2, v4, v30);
-                        meshBuilder.AddUVs(uv2, uv4, uv30);
+                        meshBuilder.AddTriangle(
+                            v2, v4, v30,
+                            uv2, uv4, uv30
+                        );
 
                         // Add sides
-                        meshBuilder.AddTriangle(v4, v6, v30);
-                        meshBuilder.AddTriangle(v6, v2, v30);
-                        meshBuilder.AddUVs(uv4, uv6, uv30);
-                        meshBuilder.AddUVs(uv6, uv2, uv30);
+                        meshBuilder.AddTriangle(
+                            v4, v6, v30,
+                            uv4, uv6, uv30
+                        );
+                        meshBuilder.AddTriangle(
+                            v6, v2, v30,
+                            uv6, uv2, uv30
+                        );
                     }
 
                     // Add top triangle
-                    meshBuilder.AddTriangle(vt, v1, v2);
-                    meshBuilder.AddUVs(uvt, uv1, uv2);
+                    meshBuilder.AddTriangle(
+                        vt, v1, v2,
+                        uvt, uv1, uv2
+                    );
 
                     // Add top quad
-                    meshBuilder.AddTriangle(v1, v3, v2);
-                    meshBuilder.AddTriangle(v2, v3, v4);
-                    meshBuilder.AddUVs(uv1, uv3, uv2);
-                    meshBuilder.AddUVs(uv2, uv3, uv4);
+                    meshBuilder.AddTriangle(
+                        v1, v3, v2,
+                        uv1, uv3, uv2
+                    );
+                    meshBuilder.AddTriangle(
+                        v2, v3, v4,
+                        uv2, uv3, uv4
+                    );
 
                     // Add bottom quad
-                    meshBuilder.AddTriangle(v3, v5, v4);
-                    meshBuilder.AddTriangle(v4, v5, v6);
-                    meshBuilder.AddUVs(uv3, uv5, uv4);
-                    meshBuilder.AddUVs(uv4, uv5, uv6);
+                    meshBuilder.AddTriangle(
+                        v3, v5, v4,
+                        uv3, uv5, uv4
+                    );
+                    meshBuilder.AddTriangle(
+                        v4, v5, v6,
+                        uv4, uv5, uv6
+                    );
 
                     // Add bottom triangle
-                    meshBuilder.AddTriangle(v5, v7, v6);
-                    meshBuilder.AddUVs(uv5, uv7, uv6);
+                    meshBuilder.AddTriangle(
+                        v5, v7, v6,
+                        uv5, uv7, uv6
+                    );
 
                     // Add remaining left and right side
-                    meshBuilder.AddTriangle(v7, v5, v1);
-                    meshBuilder.AddTriangle(v7, v2, v6);
-                    meshBuilder.AddUVs(uv7, uv5, uv1);
-                    meshBuilder.AddUVs(uv7, uv2, uv6);
+                    meshBuilder.AddTriangle(
+                        v7, v5, v1,
+                        uv7, uv5, uv1
+                    );
+                    meshBuilder.AddTriangle(
+                        v7, v2, v6,
+                        uv7, uv2, uv6
+                    );
                 }
             }
 

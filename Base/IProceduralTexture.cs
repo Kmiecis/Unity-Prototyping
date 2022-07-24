@@ -2,6 +2,6 @@
 {
     public interface IProceduralTexture
     {
-        ITexture2DBuilder Create();
+        Texture2DBuilder Create();
     }
 }

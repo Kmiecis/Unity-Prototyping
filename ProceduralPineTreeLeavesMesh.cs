@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -9,7 +11,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -46,23 +48,22 @@ namespace Common.Prototyping
 
                 var angleOffset = random.NextFloat(0f, input.maxAngleOffset);
 
-                var vertices = Hexagons.Vertices();
+                var vertices = Hexagons.Vertices;
                 for (int i1 = 0, i0 = vertices.Length - 1; i1 < vertices.Length; i0 = i1++)
                 {
-                    var u0 = (i1 * 1.0f / vertices.Length + angleOffset) * Mathx.PI_DOUBLE;
-                    var u1 = (i0 * 1.0f / vertices.Length + angleOffset) * Mathx.PI_DOUBLE;
+                    var u0 = (i1 * 1.0f / vertices.Length + angleOffset) * Mathf.PI * 2.0f;
+                    var u1 = (i0 * 1.0f / vertices.Length + angleOffset) * Mathf.PI * 2.0f;
 
-                    var vertex0 = Circles.Direction(u0).X_Y();
-                    var vertex1 = Circles.Direction(u1).X_Y();
+                    var vertex0 = Circles.Point(u0).X_Y();
+                    var vertex1 = Circles.Point(u1).X_Y();
 
                     var v0 = vertex0 * radius + vb;
                     var v1 = vertex1 * radius + vb;
 
-                    meshBuilder.AddTriangle(v0, v1, vt);
-
-                    meshBuilder.AddUVs(uv0, uv1, uvt);
-
-                    vertex0 = vertex1;
+                    meshBuilder.AddTriangle(
+                        v0, v1, vt,
+                        uv0, uv1, uvt
+                    );
                 }
             }
 

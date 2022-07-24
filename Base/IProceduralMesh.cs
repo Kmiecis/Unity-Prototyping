@@ -2,6 +2,6 @@
 {
     public interface IProceduralMesh
     {
-        IMeshBuilder Create();
+        MeshBuilder Create();
     }
 }

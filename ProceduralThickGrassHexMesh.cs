@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -9,7 +11,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -59,12 +61,12 @@ namespace Common.Prototyping
             int index = random.Next(0, Hexagons.VERTEX_COUNT);
             float indexOffset = random.NextFloat(0f, 1f);
 
-            var u0 = (index * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathx.PI_DOUBLE;
-            var u01 = ((index + 1) * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathx.PI_DOUBLE;
-            var u1 = ((index + 2) * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathx.PI_DOUBLE;
-            var vertex0 = Circles.Direction(u0).X_Y();
-            var vertex01 = Circles.Direction(u01).X_Y();
-            var vertex1 = Circles.Direction(u1).X_Y();
+            var u0 = (index * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathf.PI * 2.0f;
+            var u01 = ((index + 1) * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathf.PI * 2.0f;
+            var u1 = ((index + 2) * 1.0f / Hexagons.VERTEX_COUNT + indexOffset) * Mathf.PI * 2.0f;
+            var vertex0 = Circles.Point(u0).X_Y();
+            var vertex01 = Circles.Point(u01).X_Y();
+            var vertex1 = Circles.Point(u1).X_Y();
             var randomizationStrength = (index + indexOffset) / Hexagons.VERTEX_COUNT;
 
             var direction = vertex1 - vertex0;
@@ -90,35 +92,6 @@ namespace Common.Prototyping
 
             var v6 = v45 + rh2;
 
-            // Bottom front
-            meshBuilder.AddTriangle(v01, v0, v2);
-            meshBuilder.AddTriangle(v01, v2, v23);
-            meshBuilder.AddTriangle(v01, v23, v3);
-            meshBuilder.AddTriangle(v01, v3, v1);
-            // Bottom back
-            meshBuilder.AddTriangle(v01, v1, v3);
-            meshBuilder.AddTriangle(v01, v3, v23);
-            meshBuilder.AddTriangle(v01, v23, v2);
-            meshBuilder.AddTriangle(v01, v2, v0);
-
-            // Middle front
-            meshBuilder.AddTriangle(v23, v2, v4);
-            meshBuilder.AddTriangle(v23, v4, v45);
-            meshBuilder.AddTriangle(v23, v45, v5);
-            meshBuilder.AddTriangle(v23, v5, v3);
-            // Middle back
-            meshBuilder.AddTriangle(v23, v3, v5);
-            meshBuilder.AddTriangle(v23, v5, v45);
-            meshBuilder.AddTriangle(v23, v45, v4);
-            meshBuilder.AddTriangle(v23, v4, v2);
-
-            // Top front
-            meshBuilder.AddTriangle(v45, v4, v6);
-            meshBuilder.AddTriangle(v45, v6, v5);
-            // Top back
-            meshBuilder.AddTriangle(v45, v5, v6);
-            meshBuilder.AddTriangle(v45, v6, v4);
-
             var s1 = Mathx.Unlerp(0.0f, input.height, v23.y);
             var s2 = Mathx.Unlerp(0.0f, input.height, v45.y);
 
@@ -137,33 +110,33 @@ namespace Common.Prototyping
             var uv6 = new Vector2(0.5f, 1.0f);
 
             // Bottom front
-            meshBuilder.AddUVs(uv01, uv0, uv2);
-            meshBuilder.AddUVs(uv01, uv2, uv23);
-            meshBuilder.AddUVs(uv01, uv23, uv3);
-            meshBuilder.AddUVs(uv01, uv3, uv1);
+            meshBuilder.AddTriangle(v01, v0, v2, uv01, uv0, uv2);
+            meshBuilder.AddTriangle(v01, v2, v23, uv01, uv2, uv23);
+            meshBuilder.AddTriangle(v01, v23, v3, uv01, uv23, uv3);
+            meshBuilder.AddTriangle(v01, v3, v1, uv01, uv3, uv1);
             // Bottom back
-            meshBuilder.AddUVs(uv01, uv1, uv3);
-            meshBuilder.AddUVs(uv01, uv3, uv23);
-            meshBuilder.AddUVs(uv01, uv23, uv2);
-            meshBuilder.AddUVs(uv01, uv2, uv0);
+            meshBuilder.AddTriangle(v01, v1, v3, uv01, uv1, uv3);
+            meshBuilder.AddTriangle(v01, v3, v23, uv01, uv3, uv23);
+            meshBuilder.AddTriangle(v01, v23, v2, uv01, uv23, uv2);
+            meshBuilder.AddTriangle(v01, v2, v0, uv01, uv2, uv0);
 
             // Middle front
-            meshBuilder.AddUVs(uv23, uv2, uv4);
-            meshBuilder.AddUVs(uv23, uv4, uv45);
-            meshBuilder.AddUVs(uv23, uv45, uv5);
-            meshBuilder.AddUVs(uv23, uv5, uv3);
+            meshBuilder.AddTriangle(v23, v2, v4, uv23, uv2, uv4);
+            meshBuilder.AddTriangle(v23, v4, v45, uv23, uv4, uv45);
+            meshBuilder.AddTriangle(v23, v45, v5, uv23, uv45, uv5);
+            meshBuilder.AddTriangle(v23, v5, v3, uv23, uv5, uv3);
             // Middle back
-            meshBuilder.AddUVs(uv23, uv3, uv5);
-            meshBuilder.AddUVs(uv23, uv5, uv45);
-            meshBuilder.AddUVs(uv23, uv45, uv4);
-            meshBuilder.AddUVs(uv23, uv4, uv2);
+            meshBuilder.AddTriangle(v23, v3, v5, uv23, uv3, uv5);
+            meshBuilder.AddTriangle(v23, v5, v45, uv23, uv5, uv45);
+            meshBuilder.AddTriangle(v23, v45, v4, uv23, uv45, uv4);
+            meshBuilder.AddTriangle(v23, v4, v2, uv23, uv4, uv2);
 
             // Top front
-            meshBuilder.AddUVs(uv45, uv4, uv6);
-            meshBuilder.AddUVs(uv45, uv6, uv5);
+            meshBuilder.AddTriangle(v45, v4, v6, uv45, uv4, uv6);
+            meshBuilder.AddTriangle(v45, v6, v5, uv45, uv6, uv5);
             // Top back
-            meshBuilder.AddUVs(uv45, uv5, uv6);
-            meshBuilder.AddUVs(uv45, uv6, uv4);
+            meshBuilder.AddTriangle(v45, v5, v6, uv45, uv5, uv6);
+            meshBuilder.AddTriangle(v45, v6, v4, uv45, uv6, uv4);
         }
 
         [Serializable]

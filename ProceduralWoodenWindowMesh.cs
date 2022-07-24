@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 
 namespace Common.Prototyping
@@ -8,7 +10,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(input);
         }
@@ -117,7 +119,7 @@ namespace Common.Prototyping
             var v0 = -input.spike + input.offset;
             var v5 = input.height + input.spike + input.offset;
 
-            var vertices = Squares.Vertices();
+            var vertices = Rects.Vertices;
             for (int i1 = 0, i0 = vertices.Length - 1; i1 < vertices.Length; i0 = i1++)
             {
                 var vertex0 = vertices[i0].X_Y();
@@ -137,11 +139,11 @@ namespace Common.Prototyping
 
         private static void AddBoards(FlatMeshBuilder meshBuilder, BoardsInput input)
         {
-            var vertices = Squares.Vertices();
+            var vertices = Rects.Vertices;
 
             var boardVertices = new Vector3[vertices.Length];
             for (int i = 0; i < boardVertices.Length; ++i)
-                boardVertices[i] = Mathx.Multiply(vertices[i].X_Y(), input.extents) + input.offset;
+                boardVertices[i] = Mathx.Mul(vertices[i].X_Y(), input.extents) + input.offset;
 
             var boardHeight = input.height / input.count;
             for (int i = 0; i < input.count; ++i)

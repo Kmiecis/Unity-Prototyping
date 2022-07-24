@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -10,7 +12,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -23,7 +25,7 @@ namespace Common.Prototyping
             var vz = new Vector3(0.0f, 0.0f, 0.0f);
             var vh = new Vector3(0.0f, input.height, 0.0f);
 
-            var vertices = Hexagons.Vertices();
+            var vertices = Hexagons.Vertices;
             for (int i0 = vertices.Length - 1, i1 = 0; i1 < vertices.Length; i0 = i1++)
             {
                 var vertex0 = vertices[i0].X_Y();

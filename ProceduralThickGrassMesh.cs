@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -9,7 +11,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -50,10 +52,10 @@ namespace Common.Prototyping
             var randomIndexOffset = random.NextFloat(0.0f, 1.0f);
             var randomStrength = (randomIndex + randomIndexOffset) / Hexagons.VERTEX_COUNT;
 
-            var u0 = ((randomIndex + 0) * 1.0f / Hexagons.VERTEX_COUNT + randomIndexOffset) * Mathx.PI_DOUBLE;
-            var u1 = ((randomIndex + 2) * 1.0f / Hexagons.VERTEX_COUNT + randomIndexOffset) * Mathx.PI_DOUBLE;
-            var vertex0 = Circles.Direction(u0).X_Y();
-            var vertex1 = Circles.Direction(u1).X_Y();
+            var u0 = ((randomIndex + 0) * 1.0f / Hexagons.VERTEX_COUNT + randomIndexOffset) * Mathf.PI * 2.0f;
+            var u1 = ((randomIndex + 2) * 1.0f / Hexagons.VERTEX_COUNT + randomIndexOffset) * Mathf.PI * 2.0f;
+            var vertex0 = Circles.Point(u0).X_Y();
+            var vertex1 = Circles.Point(u1).X_Y();
 
             var h0 = new Vector3(0.0f, innerInput.unbendHeight + innerInput.bendHeightHalf * randomStrength, 0.0f);
             var h1 = new Vector3(0.0f, innerInput.bendHeightHalf, 0.0f);
@@ -88,38 +90,51 @@ namespace Common.Prototyping
             var uv6 = new Vector2(0.5f, 1.0f);
 
             // Bottom front quad
-            meshBuilder.AddTriangle(v0, v2, v3);
-            meshBuilder.AddTriangle(v0, v3, v1);
+            meshBuilder.AddTriangle(
+                v0, v2, v3,
+                uv0, uv2, uv3
+            );
+            meshBuilder.AddTriangle(
+                v0, v3, v1,
+                uv0, uv3, uv1
+            );
             // Bottom back quad
-            meshBuilder.AddTriangle(v1, v3, v0);
-            meshBuilder.AddTriangle(v3, v2, v0);
+            meshBuilder.AddTriangle(
+                v1, v3, v0,
+                uv1, uv3, uv0
+            );
+            meshBuilder.AddTriangle(
+                v3, v2, v0,
+                uv3, uv2, uv0
+            );
             // Middle front quad
-            meshBuilder.AddTriangle(v2, v4, v5);
-            meshBuilder.AddTriangle(v2, v5, v3);
+            meshBuilder.AddTriangle(
+                v2, v4, v5,
+                uv2, uv4, uv5
+            );
+            meshBuilder.AddTriangle(
+                v2, v5, v3,
+                uv2, uv5, uv3
+            );
             // Middle back quad
-            meshBuilder.AddTriangle(v3, v5, v2);
-            meshBuilder.AddTriangle(v5, v4, v2);
+            meshBuilder.AddTriangle(
+                v3, v5, v2,
+                uv3, uv5, uv2
+            );
+            meshBuilder.AddTriangle(
+                v5, v4, v2,
+                uv5, uv4, uv2
+            );
             // Top front triangle
-            meshBuilder.AddTriangle(v4, v6, v5);
+            meshBuilder.AddTriangle(
+                v4, v6, v5,
+                uv4, uv6, uv5
+            );
             // Top back triangle
-            meshBuilder.AddTriangle(v5, v6, v4);
-
-            // Bottom front quad
-            meshBuilder.AddUVs(uv0, uv2, uv3);
-            meshBuilder.AddUVs(uv0, uv3, uv1);
-            // Bottom back quad
-            meshBuilder.AddUVs(uv1, uv3, uv0);
-            meshBuilder.AddUVs(uv3, uv2, uv0);
-            // Middle front quad
-            meshBuilder.AddUVs(uv2, uv4, uv5);
-            meshBuilder.AddUVs(uv2, uv5, uv3);
-            // Middle back quad
-            meshBuilder.AddUVs(uv3, uv5, uv2);
-            meshBuilder.AddUVs(uv5, uv4, uv2);
-            // Top front triangle
-            meshBuilder.AddUVs(uv4, uv6, uv5);
-            // Top back triangle
-            meshBuilder.AddUVs(uv5, uv6, uv4);
+            meshBuilder.AddTriangle(
+                v5, v6, v4,
+                uv5, uv6, uv4
+            );
         }
 
         [Serializable]

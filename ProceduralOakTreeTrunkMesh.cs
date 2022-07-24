@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Extensions;
+using Common.Mathematics;
+using System;
 using UnityEngine;
 using Random = System.Random;
 
@@ -10,7 +12,7 @@ namespace Common.Prototyping
         [Header("Properties")]
         public Input input = Input.Default;
 
-        public override IMeshBuilder Create()
+        public override MeshBuilder Create()
         {
             return Create(in input);
         }
@@ -39,7 +41,7 @@ namespace Common.Prototyping
             var dh = input.direction * input.height;
             var rotation = Quaternion.FromToRotation(Vector3.up, input.direction);
 
-            var vertices = Hexagons.Vertices();
+            var vertices = Hexagons.Vertices;
             for (int i1 = 0, i0 = vertices.Length - 1; i1 < vertices.Length; i0 = i1++)
             {
                 var vertex0 = vertices[i0].X_Y();
@@ -66,8 +68,14 @@ namespace Common.Prototyping
             var leftRadius = input.radius * radiusScale;
             var rightRadius = input.radius - leftRadius;
 
-            var leftDirection = Spheres.Direction(random.NextFloat(0.0f, Mathx.PI_QUARTER), random.NextFloat(0.0f, Mathx.PI_HALF));
-            var rightDirection = Spheres.Direction(random.NextFloat(0.0f, Mathx.PI_QUARTER), random.NextFloat(0.0f, Mathx.PI_HALF));
+            var leftDirection = Spheres.Point(
+                random.NextFloat(0.0f, Mathf.PI * 0.25f),
+                random.NextFloat(0.0f, Mathf.PI * 0.5f)
+            );
+            var rightDirection = Spheres.Point(
+                random.NextFloat(0.0f, Mathf.PI * 0.25f),
+                random.NextFloat(0.0f, Mathf.PI * 0.5f)
+            );
 
             var nextHeight = input.height * 0.5f;
 

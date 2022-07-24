@@ -6,7 +6,7 @@ namespace Common.Prototyping
     [RequireComponent(typeof(MeshFilter))]
     public abstract class ProceduralMeshBase : MonoBehaviour, IProceduralMesh
     {
-        public abstract IMeshBuilder Create();
+        public abstract MeshBuilder Create();
 
 #if UNITY_EDITOR
         private void OnValidate()
