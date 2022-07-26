@@ -34,20 +34,20 @@ namespace Common.Prototyping
             };
 
             var initialCoordinates = Vector2Int.zero;
-            var initialPosition = Hexagons.Convert(initialCoordinates, input.radius).X_Y() * 2;
+            var initialPosition = Hexagons.Convert(initialCoordinates, input.diameter).X_Y() * 2;
             CreateSingleGrass(input, meshBuilder, innerInput, initialPosition, ref random);
             for (int d = 0; d < (int)Hexagons.Direction.Count; ++d)
             {
                 for (int x = 0; x < input.depth; ++x)
                 {
                     var nextCoordinates = initialCoordinates + Hexagons.Translations[d] * (x + 1);
-                    var nextPosition = Hexagons.Convert(nextCoordinates, input.radius).X_Y() * 2;
+                    var nextPosition = Hexagons.Convert(nextCoordinates, input.diameter).X_Y() * 2;
                     CreateSingleGrass(input, meshBuilder, innerInput, nextPosition, ref random);
 
                     for (int y = 0; y < x; ++y)
                     {
                         var offsetCoordinates = nextCoordinates + Hexagons.Translations[Mathx.IncrIndex(d, (int)Hexagons.Direction.Count, 2)] * (y + 1);
-                        var offsetPosition = Hexagons.Convert(offsetCoordinates, input.radius).X_Y() * 2;
+                        var offsetPosition = Hexagons.Convert(offsetCoordinates, input.diameter).X_Y() * 2;
                         CreateSingleGrass(input, meshBuilder, innerInput, offsetPosition, ref random);
                     }
                 }
@@ -71,9 +71,9 @@ namespace Common.Prototyping
 
             var direction = vertex1 - vertex0;
 
-            var v0 = vertex0 * input.radius + offset;
-            var v01 = vertex01 * input.radius + offset;
-            var v1 = vertex1 * input.radius + offset;
+            var v0 = vertex0 * input.diameter + offset;
+            var v01 = vertex01 * input.diameter + offset;
+            var v1 = vertex1 * input.diameter + offset;
 
             var rh0 = new Vector3(0.0f, innerInput.unbendHeight - innerInput.bendHeightHalf * randomizationStrength, 0.0f);
 
@@ -144,7 +144,7 @@ namespace Common.Prototyping
         {
             public int depth;
             [Range(0.0f, 5.0f)] public float height;
-            [Range(0.0f, 1.0f)] public float radius;
+            [Range(0.0f, 1.0f)] public float diameter;
             [Range(0.0f, 1.0f)] public float bendThreshold;
             [Range(0.0f, 1.0f)] public float curveStrength;
             public int seed;
@@ -153,7 +153,7 @@ namespace Common.Prototyping
             {
                 depth = 2,
                 height = 1.25f,
-                radius = 0.125f,
+                diameter = 0.125f,
                 bendThreshold = 0.7f,
                 curveStrength = 0.2f
             };
