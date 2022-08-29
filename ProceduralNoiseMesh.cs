@@ -33,11 +33,11 @@ namespace Common.Prototyping
 
             var extents = new Vector2Int(input.width, input.height);
             var scale = new Vector2(input.scale, input.scale);
-            var noiseMap = new float[extents.x, extents.y];
+            var noiseMap = new float[extents.x * extents.y];
             Noisex.GetNoiseMap(
-                noiseMap,
-                input.offset.x, input.offset.y,
+                noiseMap, extents.x, extents.y,
                 input.octaves, input.persistance, input.lacunarity,
+                input.offset.x, input.offset.y,
                 scale.x, scale.y, input.seed
             );
 
@@ -61,7 +61,8 @@ namespace Common.Prototyping
             {
                 for (int x = input.resolution; x < input.width - input.resolution; ++x)
                 {
-                    var noise = noiseMap[x, y];
+                    var i = Mathx.ToIndex(x, y, input.width);
+                    var noise = noiseMap[i];
 
                     bool isMin = true;
                     bool isMax = true;
@@ -72,7 +73,8 @@ namespace Common.Prototyping
                             if (ix == x && iy == y)
                                 continue;
 
-                            var inoise = noiseMap[ix, iy];
+                            var ii = Mathx.ToIndex(ix, iy, input.width);
+                            var inoise = noiseMap[ii];
 
                             if (inoise >= noise)
                                 isMax = false;
@@ -99,9 +101,12 @@ namespace Common.Prototyping
                 var v1 = meshPoints[t1];
                 var v2 = meshPoints[t2];
 
-                var h0 = noiseMap[Mathf.RoundToInt(v0.x * input.width), Mathf.RoundToInt(v0.y * input.height)] * input.multiplier;
-                var h1 = noiseMap[Mathf.RoundToInt(v1.x * input.width), Mathf.RoundToInt(v1.y * input.height)] * input.multiplier;
-                var h2 = noiseMap[Mathf.RoundToInt(v2.x * input.width), Mathf.RoundToInt(v2.y * input.height)] * input.multiplier;
+                var h0i = Mathx.ToIndex(Mathf.RoundToInt(v0.x * input.width), Mathf.RoundToInt(v0.y * input.height), input.width);
+                var h0 = noiseMap[h0i] * input.multiplier;
+                var h1i = Mathx.ToIndex(Mathf.RoundToInt(v1.x * input.width), Mathf.RoundToInt(v1.y * input.height), input.width);
+                var h1 = noiseMap[h1i] * input.multiplier;
+                var h2i = Mathx.ToIndex(Mathf.RoundToInt(v2.x * input.width), Mathf.RoundToInt(v2.y * input.height), input.width);
+                var h2 = noiseMap[h2i] * input.multiplier;
 
                 meshBuilder.AddTriangle(
                     new Vector3(v0.x, h0, v0.y),
