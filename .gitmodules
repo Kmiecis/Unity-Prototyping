@@ -1,0 +1,3 @@
+[submodule "unity-package-common"]
+	path = unity-package-common
+	url = https://github.com/kmiecis/unity-package-common
