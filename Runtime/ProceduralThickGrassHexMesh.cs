@@ -92,8 +92,8 @@ namespace Common.Prototyping
 
             var v6 = v45 + rh2;
 
-            var s1 = Mathx.Unlerp(0.0f, input.height, v23.y);
-            var s2 = Mathx.Unlerp(0.0f, input.height, v45.y);
+            var s1 = Mathx.InverseLerp(0.0f, input.height, v23.y);
+            var s2 = Mathx.InverseLerp(0.0f, input.height, v45.y);
 
             var uv0 = new Vector2(0.0f, 0.0f);
             var uv01 = new Vector2(0.5f, 0.0f);

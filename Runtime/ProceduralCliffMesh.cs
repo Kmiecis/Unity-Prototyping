@@ -6,9 +6,8 @@ using Random = System.Random;
 
 namespace Common.Prototyping
 {
-    // TODO
     public class ProceduralCliffMesh : ProceduralMeshBase
-    {
+    {   // TODO
         [Header("Properties")]
         public Input input = Input.Default;
 

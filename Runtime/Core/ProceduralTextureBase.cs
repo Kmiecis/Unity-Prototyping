@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Common.Extensions;
+using System.Collections;
 using UnityEngine;
 
 namespace Common.Prototyping
@@ -32,8 +33,8 @@ namespace Common.Prototyping
                     {
                         var texturePropertyId = texturePropertyIds[t];
 
-                        var texture = material.GetTexture(texturePropertyId);
-                        if (Utility.TryCast(texture, out Texture2D texture2D))
+                        if (material.TryGetTexture(texturePropertyId, out var texture) &&
+                            texture is Texture2D texture2D)
                         {
                             var textureBuilder = Create();
                             textureBuilder.Overwrite(texture2D);
